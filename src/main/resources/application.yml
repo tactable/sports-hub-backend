@@ -1,0 +1,12 @@
+spring.application.name: sports-hub
+
+spring:
+  profiles:
+    active: secrets
+
+server:
+  port: 8080
+
+api-football:
+  base-url: https://v3.football.api-sports.io
+  api-key: ${API_FOOTBALL_KEY}
