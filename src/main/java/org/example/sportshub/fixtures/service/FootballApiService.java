@@ -3,6 +3,7 @@ package org.example.sportshub.fixtures.service;
 import org.example.sportshub.fixtures.model.Fixture;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -27,7 +28,13 @@ public class FootballApiService {
                 .build();
     }
 
+    // Cached for manual requests
+    @Cacheable(value = "liveFixtures", unless = "#result == null")
     public Mono<List<Fixture>> getLiveFixtures() {
+        return getLiveFixturesFromApi();
+    }
+
+    public Mono<List<Fixture>> getLiveFixturesFromApi() {
         return webClient.get()
                 .uri("/fixtures?live=all")
                 .header("x-apisports-key", apiKey)
@@ -40,6 +47,7 @@ public class FootballApiService {
                 });
     }
 
+    @Cacheable(value = "todayFixtures", key = "#root.methodName", unless = "#result == null")
     public Mono<List<Fixture>> getTodayFixtures() {
         String today = LocalDate.now().toString();
         return webClient.get()
@@ -94,8 +102,9 @@ public class FootballApiService {
         return fixtures;
     }
 
-    public Flux<List<Fixture>> streamLiveMatches() {
+    // Streaming fresh data
+    public Flux<List<Fixture>> streamLiveFixtures() {
         return Flux.interval(Duration.ofSeconds(60))
-                .flatMap(_ -> getLiveFixtures());
+                .flatMap(tick -> getLiveFixturesFromApi());
     }
 }

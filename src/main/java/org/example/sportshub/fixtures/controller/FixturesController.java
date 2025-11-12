@@ -2,7 +2,6 @@ package org.example.sportshub.fixtures.controller;
 
 import org.example.sportshub.fixtures.model.Fixture;
 import org.example.sportshub.fixtures.service.FootballApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,7 @@ public class FixturesController {
 
     // Continuously update live fixtures
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<List<Fixture>> streamLiveMatches() {
-        return footballApiService.streamLiveMatches();
+    public Flux<List<Fixture>> streamLiveFixtures() {
+        return footballApiService.streamLiveFixtures();
     }
 }
