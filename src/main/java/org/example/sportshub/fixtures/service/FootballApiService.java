@@ -2,6 +2,7 @@ package org.example.sportshub.fixtures.service;
 
 import org.example.sportshub.fixtures.model.Fixture;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.example.sportshub.fixtures.model.FixtureStats;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,20 @@ public class FootballApiService {
                 });
     }
 
+    // Get fixture stats
+    public Mono<List<FixtureStats>> getFixtureStats(int fixtureId) {
+        return webClient.get()
+                .uri("/fixtures/statistics?fixture=" + fixtureId)
+                .header("x-apisports-key", apiKey)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(this::parseFixtureStats)
+                .onErrorResume(e -> {
+                    System.err.println("Error fetching fixture statistics: " + e.getMessage());
+                    return Mono.just(new ArrayList<>());
+                });
+    }
+
     private List<Fixture> parseMatches(JsonNode node) {
         List<Fixture> fixtures = new ArrayList<>();
         JsonNode responseArray = node.get("response");
@@ -100,6 +115,76 @@ public class FootballApiService {
             }
         }
         return fixtures;
+    }
+
+    private List<FixtureStats> parseFixtureStats(JsonNode response) {
+        List<FixtureStats> statsList = new ArrayList<>();
+
+        JsonNode responseArray = response.get("response");
+
+        for (JsonNode teamData : responseArray) {
+            JsonNode statistics = teamData.get("statistics");
+            FixtureStats stats = new FixtureStats();
+
+            for (JsonNode stat : statistics) {
+                String type = stat.path("type").asText();
+                JsonNode valueNode = stat.path("value");
+                String value = valueNode.isNull() ? "0" : valueNode.asText();
+
+                switch (type) {
+                    case "Shots on Goal":
+                        stats.setShotsOnGoal(Integer.parseInt(value));
+                        break;
+                    case "Shots off Goal":
+                        stats.setShotsOffGoal(Integer.parseInt(value));
+                        break;
+                    case "Total Shots":
+                        stats.setTotalShots(Integer.parseInt(value));
+                        break;
+                    case "Blocked Shots":
+                        stats.setBlockedShots(Integer.parseInt(value));
+                        break;
+                    case "Shots insidebox":
+                        stats.setShotsInsideBox(Integer.parseInt(value));
+                        break;
+                    case "Shots outsidebox":
+                        stats.setShotsOutsideBox(Integer.parseInt(value));
+                        break;
+                    case "Fouls":
+                        stats.setFouls(Integer.parseInt(value));
+                        break;
+                    case "Corner Kicks":
+                        stats.setCornerKicks(Integer.parseInt(value));
+                        break;
+                    case "Offsides":
+                        stats.setOffsides(Integer.parseInt(value));
+                        break;
+                    case "Ball Possession":
+                        stats.setBallPossession(value);
+                        break;
+                    case "Yellow Cards":
+                        stats.setYellowCards(Integer.parseInt(value));
+                        break;
+                    case "Red Cards":
+                        stats.setRedCards(Integer.parseInt(value));
+                        break;
+                    case "Goalkeeper Saves":
+                        stats.setGoalkeeperSaves(Integer.parseInt(value));
+                        break;
+                    case "Total passes":
+                        stats.setTotalPasses(Integer.parseInt(value));
+                        break;
+                    case "Passes accurate":
+                        stats.setPassesAccurate(Integer.parseInt(value));
+                        break;
+                    case "Passes %":
+                        stats.setPassesPercent(value);
+                        break;
+                }
+            }
+            statsList.add(stats);
+        }
+        return statsList;
     }
 
     // Streaming fresh data

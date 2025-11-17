@@ -1,9 +1,11 @@
 package org.example.sportshub.fixtures.controller;
 
 import org.example.sportshub.fixtures.model.Fixture;
+import org.example.sportshub.fixtures.model.FixtureStats;
 import org.example.sportshub.fixtures.service.FootballApiService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -31,6 +33,12 @@ public class FixturesController {
     @GetMapping("/today")
     public Mono<List<Fixture>> getTodayFixtures() {
         return footballApiService.getTodayFixtures();
+    }
+
+    // Get statistics for a fixture
+    @GetMapping("/{fixtureId}/stats")
+    public Mono<List<FixtureStats>> getStats(@PathVariable int fixtureId) {
+        return footballApiService.getFixtureStats(fixtureId);
     }
 
     // Continuously update live fixtures
