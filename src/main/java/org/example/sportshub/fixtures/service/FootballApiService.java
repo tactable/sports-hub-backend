@@ -64,6 +64,7 @@ public class FootballApiService {
     }
 
     // Get fixture stats
+    @Cacheable(value = "fixtureStats", key = "#root.methodName", unless = "#result == null")
     public Mono<List<FixtureStats>> getFixtureStats(int fixtureId) {
         return webClient.get()
                 .uri("/fixtures/statistics?fixture=" + fixtureId)

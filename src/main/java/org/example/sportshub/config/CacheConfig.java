@@ -17,7 +17,8 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
                 "liveFixtures",
-                "todayFixtures"
+                "todayFixtures",
+                "fixtureStats"
         );
 
         cacheManager.setAsyncCacheMode(true);
