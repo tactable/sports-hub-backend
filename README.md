@@ -49,7 +49,7 @@ sportshub-backend/
 ## ⚙️ Setup
 ### 1. Clone the Repository
    ``` bash
-   git clone https://github.com/yourusername/sportshub-backend.git
+   git clone https://github.com/tactable/sportshub-backend.git
    cd sportshub-backend
    ```
 ### 2. Configure API Key
