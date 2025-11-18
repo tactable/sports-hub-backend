@@ -10,14 +10,15 @@ This backend application waits for calls from the React web application for socc
 - API-Football: Third party sports data API
 
 📋 Features
-⚽️ Fetch live football fixtures
-🗓️ Get today's scheduled fixtures
-📊 Fixture statistics
-📡 Server-Sent Events (SSE) for real-time score streaming
-💾 Caching to minimize API calls
-💥 Reactive, non-blocking architecture
+- ⚽️ Fetch live football fixtures
+- 🗓️ Get today's scheduled fixtures
+- 📊 Fixture statistics
+- 📡 Server-Sent Events (SSE) for real-time score streaming
+- 💾 Caching to minimize API calls
+- 💥 Reactive, non-blocking architecture
 
 🏗️ Project Structure
+```
 sportshub-backend/
 ├── src/
 │   ├── main/
@@ -38,6 +39,7 @@ sportshub-backend/
 │   └── test/
 ├── pom.xml
 └── README.md
+```
 
 🛠️ Pre-requisites
 - Java 17+
@@ -84,7 +86,7 @@ The application uses Caffeine Cache to minimize API calls:
 
 Cache configuration in CacheConfig.java:
 ``` java
-maximumSize=100,expireAfterWrite=2m,recordStats
+maximumSize=100,expireAfterWrite=5m,recordStats
 ```
 This keeps you well under API rate limits while maintaining fresh data.
 
