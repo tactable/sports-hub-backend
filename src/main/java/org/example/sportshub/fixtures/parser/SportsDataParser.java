@@ -1,83 +1,17 @@
-package org.example.sportshub.fixtures.service;
+package org.example.sportshub.fixtures.parser;
 
-import org.example.sportshub.fixtures.model.Fixture;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.example.sportshub.fixtures.model.Fixture;
 import org.example.sportshub.fixtures.model.FixtureStats;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class FootballApiService {
+public class SportsDataParser {
 
-    private final WebClient webClient;
-
-    @Value("${api-football.api-key}")
-    private String apiKey;
-
-    public FootballApiService(@Value("${api-football.base-url}") String baseUrl) {
-        this.webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .build();
-    }
-
-    // Cached for manual requests
-    @Cacheable(value = "liveFixtures", unless = "#result == null")
-    public Mono<List<Fixture>> getLiveFixtures() {
-        return getLiveFixturesFromApi();
-    }
-
-    public Mono<List<Fixture>> getLiveFixturesFromApi() {
-        return webClient.get()
-                .uri("/fixtures?live=all")
-                .header("x-apisports-key", apiKey)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(this::parseFixtures)
-                .onErrorResume(e -> {
-                    System.err.println("Error fetching live fixtures: " + e.getMessage());
-                    return Mono.just(new ArrayList<>());
-                });
-    }
-
-    @Cacheable(value = "todayFixtures", key = "#root.methodName", unless = "#result == null")
-    public Mono<List<Fixture>> getTodayFixtures() {
-        String today = LocalDate.now().toString();
-        return webClient.get()
-                .uri("/fixtures?date=" + today)
-                .header("x-apisports-key", apiKey)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(this::parseFixtures)
-                .onErrorResume(e -> {
-                    System.err.println("Error fetching today's fixtures: " + e.getMessage());
-                    return Mono.just(new ArrayList<>());
-                });
-    }
-
-    // Get fixture stats
-    public Mono<List<FixtureStats>> getFixtureStats(int fixtureId) {
-        return webClient.get()
-                .uri("/fixtures/statistics?fixture=" + fixtureId)
-                .header("x-apisports-key", apiKey)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(this::parseFixtureStats)
-                .onErrorResume(e -> {
-                    System.err.println("Error fetching fixture statistics: " + e.getMessage());
-                    return Mono.just(new ArrayList<>());
-                });
-    }
-
-    private List<Fixture> parseFixtures(JsonNode node) {
+    public List<Fixture> parseFixtures(JsonNode node) {
         List<Fixture> fixtures = new ArrayList<>();
         JsonNode responseArray = node.get("response");
 
@@ -119,7 +53,7 @@ public class FootballApiService {
         return fixtures;
     }
 
-    private List<FixtureStats> parseFixtureStats(JsonNode response) {
+    public List<FixtureStats> parseFixtureStats(JsonNode response) {
         List<FixtureStats> statsList = new ArrayList<>();
 
         JsonNode responseArray = response.get("response");
@@ -187,11 +121,5 @@ public class FootballApiService {
             statsList.add(stats);
         }
         return statsList;
-    }
-
-    // Streaming fresh data
-    public Flux<List<Fixture>> streamLiveFixtures() {
-        return Flux.interval(Duration.ofSeconds(60))
-                .flatMap(_ -> getLiveFixturesFromApi());
     }
 }
