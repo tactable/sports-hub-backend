@@ -41,7 +41,7 @@ public class FootballApiService {
                 .header("x-apisports-key", apiKey)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(this::parseMatches)
+                .map(this::parseFixtures)
                 .onErrorResume(e -> {
                     System.err.println("Error fetching live fixtures: " + e.getMessage());
                     return Mono.just(new ArrayList<>());
@@ -56,7 +56,7 @@ public class FootballApiService {
                 .header("x-apisports-key", apiKey)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(this::parseMatches)
+                .map(this::parseFixtures)
                 .onErrorResume(e -> {
                     System.err.println("Error fetching today's fixtures: " + e.getMessage());
                     return Mono.just(new ArrayList<>());
@@ -64,7 +64,6 @@ public class FootballApiService {
     }
 
     // Get fixture stats
-    @Cacheable(value = "fixtureStats", key = "#root.methodName", unless = "#result == null")
     public Mono<List<FixtureStats>> getFixtureStats(int fixtureId) {
         return webClient.get()
                 .uri("/fixtures/statistics?fixture=" + fixtureId)
@@ -78,7 +77,7 @@ public class FootballApiService {
                 });
     }
 
-    private List<Fixture> parseMatches(JsonNode node) {
+    private List<Fixture> parseFixtures(JsonNode node) {
         List<Fixture> fixtures = new ArrayList<>();
         JsonNode responseArray = node.get("response");
 
@@ -105,7 +104,9 @@ public class FootballApiService {
                 // Extract teams
                 JsonNode teams = item.get("teams");
                 fixture.setHomeTeam(teams.get("home").get("name").asText());
+                fixture.setHomeTeamLogo(teams.get("home").get("logo").asText());
                 fixture.setAwayTeam(teams.get("away").get("name").asText());
+                fixture.setAwayTeamLogo(teams.get("away").get("logo").asText());
 
                 // Extract scores
                 JsonNode goals = item.get("goals");
@@ -191,6 +192,6 @@ public class FootballApiService {
     // Streaming fresh data
     public Flux<List<Fixture>> streamLiveFixtures() {
         return Flux.interval(Duration.ofSeconds(60))
-                .flatMap(tick -> getLiveFixturesFromApi());
+                .flatMap(_ -> getLiveFixturesFromApi());
     }
 }

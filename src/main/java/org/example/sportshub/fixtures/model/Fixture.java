@@ -2,44 +2,27 @@ package org.example.sportshub.fixtures.model;
 
 public class Fixture {
     private int id;
-    private String ids;
-    private String live;
     private String date;
-    private int league;
-    private String leagueName;
-    private int season;
+    private String live;
     private String status;
-    private String venue;
-    private String country;
-    private String homeTeam;
-    private String awayTeam;
-    private int homeScore;
-    private int awayScore;
     private String statusShort;
     private int elapsed;
 
-    public Fixture() {
-    }
+    private String venue;
+    private String country;
 
-    public Fixture(int id, String ids, String live, String date, int league, String leagueName,
-                   int season, String status, String venue, String country, String homeTeam,
-                   String awayTeam, int homeScore, int awayScore, String statusShort, int elapsed) {
-        this.id = id;
-        this.ids = ids;
-        this.live = live;
-        this.date = date;
-        this.league = league;
-        this.leagueName = leagueName;
-        this.season = season;
-        this.status = status;
-        this.venue = venue;
-        this.country = country;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.homeScore = homeScore;
-        this.awayScore = awayScore;
-        this.statusShort = statusShort;
-        this.elapsed = elapsed;
+    private int league;
+    private String leagueName;
+    private int season;
+
+    private String homeTeam;
+    private int homeScore;
+    private String homeTeamLogo;
+    private String awayTeam;
+    private int awayScore;
+    private String awayTeamLogo;
+
+    public Fixture() {
     }
 
     // Getters
@@ -47,16 +30,32 @@ public class Fixture {
         return id;
     }
 
-    public String getIds() {
-        return ids;
+    public String getDate() {
+        return date;
     }
 
     public String getLive() {
         return live;
     }
 
-    public String getDate() {
-        return date;
+    public String getStatus() {
+        return status;
+    }
+
+    public String getStatusShort() {
+        return statusShort;
+    }
+
+    public int getElapsed() {
+        return elapsed;
+    }
+
+    public String getVenue() {
+        return venue;
+    }
+
+    public String getCountry() {
+        return country;
     }
 
     public int getLeague() {
@@ -71,53 +70,33 @@ public class Fixture {
         return season;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public String getVenue() {
-        return venue;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
     public String getHomeTeam() {
         return homeTeam;
-    }
-
-    public String getAwayTeam() {
-        return awayTeam;
     }
 
     public int getHomeScore() {
         return homeScore;
     }
 
+    public String getHomeTeamLogo() {
+        return homeTeamLogo;
+    }
+
+    public String getAwayTeam() {
+        return awayTeam;
+    }
+
     public int getAwayScore() {
         return awayScore;
     }
 
-    public String getStatusShort() {
-        return statusShort;
-    }
-
-    public int getElapsed() {
-        return elapsed;
+    public String getAwayTeamLogo() {
+        return awayTeamLogo;
     }
 
     // Setters
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setIds(String ids) {
-        this.ids = ids;
-    }
-
-    public void setLive(String live) {
-        this.live = live;
     }
 
     public void setDate(String date) {
@@ -144,11 +123,6 @@ public class Fixture {
         this.venue = venue;
     }
 
-    public boolean isLive(String live) {
-        return live.equals("1H") || live.equals("HT") || live.equals("2H") || live.equals("ET")
-                || live.equals("BT") || live.equals("P");
-    }
-
     public void setCountry(String country) {
         this.country = country;
     }
@@ -156,6 +130,10 @@ public class Fixture {
     public void setHomeTeam(String homeTeam) {
         this.homeTeam = homeTeam;
     }
+
+    public void setHomeTeamLogo(String homeTeamLogo) { this.homeTeamLogo = homeTeamLogo; }
+
+    public void setAwayTeamLogo(String awayTeamLogo) { this.awayTeamLogo = awayTeamLogo; }
 
     public void setAwayTeam(String awayTeam) {
         this.awayTeam = awayTeam;
